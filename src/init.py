@@ -9,7 +9,7 @@ import pandas as pd
 import pymysql
 
 load_dotenv()
-SAVE_PATH = "{SAVE_PATH}"
+SAVE_PATH = ".tmp"
 
 
 def get_json():
@@ -112,6 +112,8 @@ def init_db():
     for file in list_file:
         with open(f"{SAVE_PATH}/{file}", "r", encoding="utf-8") as json_file:
             record = json.load(json_file)
+        data = pd.read_json(f"{SAVE_PATH}/{file}", lines=True)
+        data = data.to_dict(orient="records")
         for data in record:
             cursor.execute(
                 f"INSERT INTO logs(id, user_id, opening_id, action_type, date) VALUES({data['id']}, {data['user_id']}, {data['opening_id']}, '{data['action_type']}', '{str(data['date']).split('+', maxsplit=1)[0]}')"
